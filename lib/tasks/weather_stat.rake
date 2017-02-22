@@ -20,11 +20,16 @@ task :weather_averages, [:city_state_csv] => :environment do |t, args|
     year = 2015
     month = 11
     day = 1
-    city = row[0]
-    state = row[1]
+    city = row[0].strip.gsub(' ','_')
+    state = row[1].strip
     current_date = Date.new(year, month, day)
     api_key = ENV['API_KEY']
     base_url = "http://api.wunderground.com/api/#{api_key}/history_"
+
+    if city == '' || state == ''
+      pp "Skipping #{city},#{state}"
+      next
+    end
 
     CSV.open("#{state}_#{city}.csv", "w") do |csv|
       csv << ["day of year", "min temp", "max temp", "mean windspeed", "min vis", "max vis", "percip in"]
